@@ -1,7 +1,7 @@
 WebGL CT
 ========
 
-A system for simulating xray exposures and reconstructing into an image.
+A system for simulating xray exposures and reconstructing into an image. The end goal is to be able to input slices reconstruct them, and view output with [this](http://www.lebarba.com/WebGL/Index.html).
 
 Simulation of exposure
 ----------------------

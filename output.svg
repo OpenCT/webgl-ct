@@ -2,7 +2,7 @@
 <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="128px" height="128px" viewBox="0 0 128 128" enable-background="new 0 0 128 128" xml:space="preserve">
+	 width="128px" height="90px" viewBox="0 0 128 90" enable-background="new 0 0 128 128" xml:space="preserve">
 <g>
 	
 		<image overflow="visible" width="128" height="128" xlink:href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAgEBgwGDAAD/7AARRHVja3kAAQAEAAAAHgAA/+4AIUFkb2JlAGTAAAAAAQMA
@@ -64,8 +64,8 @@ Hanxy2+WB3eqZBjNGb9og5NWhXAlKgP9sW6pJY8tT/CJ1NWzLuCMv4yMSoFGYSte8/rl1//Z" transf
 <rect x="103.008" y="65.116" fill="none" width="23.932" height="9.979"/>
 <text transform="matrix(1 0 0 1 103.0078 69.376)" font-family="'MyriadPro-Regular'" font-size="6">x=Max X</text>
 <line fill="none" stroke="#000000" stroke-miterlimit="10" x1="39.522" y1="66.313" x2="39.522" y2="76.292"/>
-<rect x="35.123" y="104.786" fill="none" width="3.688" height="6.29"/>
-<text transform="matrix(1 0 0 1 35.123 109.0459)" font-family="'MyriadPro-Regular'" font-size="6">x</text>
+<rect x="37.678" y="79.405" fill="none" width="3.688" height="6.29"/>
+<text transform="matrix(1 0 0 1 37.6777 83.665)" font-family="'MyriadPro-Regular'" font-size="6">x</text>
 <line fill="none" stroke="#000000" stroke-miterlimit="10" x1="39.522" y1="71.303" x2="62.679" y2="3.659"/>
 <rect x="10.672" y="9.11" fill="none" width="39.045" height="14.1"/>
 <text transform="matrix(1 0 0 1 10.6719 13.3701)"><tspan x="0" y="0" font-family="'MyriadPro-Regular'" font-size="6">OUT[x][y] = </tspan><tspan x="0" y="7.2" font-family="'MyriadPro-Regular'" font-size="6">∫ IN[f(t)][g(t)]dt</tspan></text>

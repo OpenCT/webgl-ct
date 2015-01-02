@@ -114,7 +114,9 @@ function initBuffers() {
   positionBuffer.itemSize = 3;
   positionBuffer.numItems = 4;
 }
-
+var b = 0.2;
+var a = 0.8;
+var c = 1;
 function drawScene() {
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -126,9 +128,9 @@ function drawScene() {
   gl.bindTexture(gl.TEXTURE_2D, neheTexture);
   gl.uniform1i(shaderProgram.samplerUniform, 0);
   
-  gl.uniform1f(shaderProgram.aUniform, 0.8);
-  gl.uniform1f(shaderProgram.bUniform, 0.2);
-  gl.uniform1f(shaderProgram.cUniform, 1.0);
+  gl.uniform1f(shaderProgram.aUniform, a);
+  gl.uniform1f(shaderProgram.bUniform, b);
+  gl.uniform1f(shaderProgram.cUniform, c);
   gl.drawArrays(gl.TRIANGLE_FAN, 0,4);
 }
 
@@ -140,3 +142,19 @@ initTexture();
 
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.enable(gl.DEPTH_TEST);
+
+document.onkeydown = function(e){
+  if(e.keyCode == 40){
+    b+=0.01;
+  }
+  if(e.keyCode == 39){
+    a+=0.01;
+  }
+  if(e.keyCode == 38){
+    b-=0.01;
+  }
+  if(e.keyCode == 37){
+    a-=0.01;
+  }
+  drawScene()
+};

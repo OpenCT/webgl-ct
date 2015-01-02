@@ -10,8 +10,11 @@
     
       uniform sampler2D uSampler;
     
-      void main(void) {
-        float angle = 90.0;
+      void recreate(void) {
+
+      }
+      void simulate(void) {
+        float angle = 3.14;
         mat2 RotationMatrix = mat2( cos(angle), -sin(angle),
                                     sin(angle),  cos(angle) );
         mat2 scale = mat2(.8,0,0,.8);
@@ -19,6 +22,11 @@
         gl_FragColor = texture2D(uSampler, vTextureCoord);
         gl_FragColor.g = texture2D(uSampler, texCoord1).g;
       }
+      
+      void main(void) {
+        simulate();
+      }
+
     </script>
     
     <script id="shader-vs" type="x-shader/x-vertex">

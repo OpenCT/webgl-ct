@@ -2,7 +2,7 @@ var gl;
 
 function initGL(canvas) {
   try {
-    gl = canvas.getContext("experimental-webgl");
+    gl = canvas.getContext("experimental-webgl", {preserveDrawingBuffer: true});
     gl.viewportWidth = canvas.width;
     gl.viewportHeight = canvas.height;
   } catch (e) {
@@ -70,8 +70,10 @@ function initShaders() {
   gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
   
   shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+  shaderProgram.aUniform = gl.getUniformLocation(shaderProgram, "a");
+  shaderProgram.bUniform = gl.getUniformLocation(shaderProgram, "b");
+  shaderProgram.cUniform = gl.getUniformLocation(shaderProgram, "c");
 }
-
 
 function handleLoadedTexture(texture) {
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -123,6 +125,10 @@ function drawScene() {
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, neheTexture);
   gl.uniform1i(shaderProgram.samplerUniform, 0);
+  
+  gl.uniform1f(shaderProgram.aUniform, 0.8);
+  gl.uniform1f(shaderProgram.bUniform, 0.2);
+  gl.uniform1f(shaderProgram.cUniform, 1.0);
   gl.drawArrays(gl.TRIANGLE_FAN, 0,4);
 }
 

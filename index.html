@@ -5,7 +5,10 @@
   
     <script id="shader-fs" type="x-shader/x-fragment">
       precision mediump float;
-    
+      const float a = .8;
+      const float b = .8;
+      const float c = 1.;
+      
       varying vec2 vTextureCoord;
     
       uniform sampler2D uSampler;
@@ -14,13 +17,30 @@
 
       }
       void simulate(void) {
-        float angle = 3.14;
-        mat2 RotationMatrix = mat2( cos(angle), -sin(angle),
-                                    sin(angle),  cos(angle) );
-        mat2 scale = mat2(.8,0,0,.8);
-        vec2 texCoord1 = ((vTextureCoord - vec2(0.5,0.5)) * RotationMatrix + vec2(0.5,0.5));
+        float angle = 3.14*vTextureCoord.y;
+        mat2 RotationMatrix = mat2(cos(angle), -sin(angle),
+                                   sin(angle),  cos(angle));
+        vec2 unit = normalize(vec2(2.0*(vTextureCoord.x-0.5),-(a+b)));
+        vec2 point = vec2(0,a);
+        float value = 0.0;
+        for(int i = 0; i < 70; i++){
+          point += unit*vec2(.01,.01);
+          value += texture2D(uSampler, point * RotationMatrix/vec2(2.0,2.0)+vec2(.5,.5)).r;
+          // rotation: vec2 texCoord1 = ((vTextureCoord - vec2(0.5,0.5)) * RotationMatrix + vec2(0.5,0.5));
+        }
+        
+        //mat2 scale = mat2(.8,0,0,.8);
+        //vec2 texCoord1 = ((vTextureCoord - vec2(0.5,0.5)) * RotationMatrix + vec2(0.5,0.5));
         gl_FragColor = texture2D(uSampler, vTextureCoord);
-        gl_FragColor.g = texture2D(uSampler, texCoord1).g;
+         gl_FragColor.r = value / 70.0;
+         
+         
+        angle = 3.14;
+        RotationMatrix = mat2(cos(angle), -sin(angle),
+                              sin(angle),  cos(angle));
+        gl_FragColor.b = texture2D(uSampler, (vTextureCoord - vec2(0.5,0.5)) * RotationMatrix + vec2(0.5,0.5) ).b;
+        
+        //gl_FragColor.g = texture2D(uSampler, texCoord1).g;
       }
       
       void main(void) {

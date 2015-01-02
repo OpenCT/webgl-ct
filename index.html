@@ -14,30 +14,37 @@
       uniform sampler2D uSampler;
     
       void recreate(void) {
-
+        vec2 pos = vTextureCoord * vec2(2,2) - vec2(1,1);
+        float temp = length(pos)/a;
+        float amplitude = temp/sqrt(temp*temp+1.0);
+        float angle = atan(pos.y,pos.x);
+        float value = 0.0;
+        temp = 0.0;
+        for(int i = 0; i < 100; i++){
+          temp += 1.0 / 100.;
+          value += texture2D(uSampler, vec2(amplitude*cos(temp*3.14+angle)/2.0+0.5,temp)).r;
+        }
+        gl_FragColor.rbga = vec4(value/3.0,0.0,0.0,1.0);
+       // gl_FragColor.r = texture2D(uSampler, vec2(.5,amplitude*cos(3.14 + angle)/2.0+0.5)).r;
+        
       }
       void simulate(void) {
-        float angle = 6.28*vTextureCoord.y;
+        float angle = 3.14*vTextureCoord.y;
         mat2 RotationMatrix = mat2(cos(angle), -sin(angle),
                                    sin(angle),  cos(angle));
         vec2 unit = normalize(vec2(-2.0*(vTextureCoord.x-0.5),-(a+b)));
         vec2 point = vec2(0,a);
         float value = 0.0;
-        for(int i = 0; i < 70; i++){
-          point += unit*vec2(.02,.02);
+        for(int i = 0; i < 100; i++){
+          point += unit*vec2(2.0/100.0,2.0/100.0);
           value += texture2D(uSampler, point * RotationMatrix/vec2(2.0,2.0)+vec2(.5,.5)).r;
         }
-        // rotation: vec2 texCoord1 = ((vTextureCoord - vec2(0.5,0.5)) * RotationMatrix + vec2(0.5,0.5));
-        //mat2 scale = mat2(.8,0,0,.8);
-        //vec2 texCoord1 = ((vTextureCoord - vec2(0.5,0.5)) * RotationMatrix + vec2(0.5,0.5));
         gl_FragColor = texture2D(uSampler, vTextureCoord);
-        gl_FragColor.r = value / 35.0;
-        
-        //gl_FragColor.g = texture2D(uSampler, texCoord1).g;
+        gl_FragColor.rbga = vec4(value / 100.0,0.0,0.0,1.0);
       }
       
       void main(void) {
-        simulate();
+        recreate();
       }
 
     </script>
@@ -54,7 +61,7 @@
     </script>
   </head>
   <body onload="drawScene();">
-    <canvas id="canvas" style="border: none;" width="500" height="500"></canvas>
+    <canvas id="canvas" style="border: none;" width="256" height="256"></canvas>
     <script src="test.js"></script>
   </body>
 </html>

@@ -94,7 +94,7 @@ function initTexture() {
     handleLoadedTexture(neheTexture);
   };
 
-  neheTexture.image.src = "test.gif";
+  neheTexture.image.src = "test.png";
 }
 
 

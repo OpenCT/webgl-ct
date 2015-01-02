@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Learning WebGL &mdash; lesson 5</title>
+    <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+  
+    <script id="shader-fs" type="x-shader/x-fragment">
+      precision mediump float;
+    
+      varying vec2 vTextureCoord;
+    
+      uniform sampler2D uSampler;
+    
+      void main(void) {
+        float angle = 90.0;
+        mat2 RotationMatrix = mat2( cos(angle), -sin(angle),
+                                    sin(angle),  cos(angle) );
+        mat2 scale = mat2(.8,0,0,.8);
+        vec2 texCoord1 = ((vTextureCoord - vec2(0.5,0.5)) * RotationMatrix + vec2(0.5,0.5));
+        gl_FragColor = texture2D(uSampler, vTextureCoord);
+        gl_FragColor.g = texture2D(uSampler, texCoord1).g;
+      }
+    </script>
+    
+    <script id="shader-vs" type="x-shader/x-vertex">
+      attribute vec3 aVertexPosition;
+      
+      varying vec2 vTextureCoord;
+      
+      void main(void) {
+        gl_Position =  vec4(aVertexPosition, 1.0);
+        vTextureCoord = (aVertexPosition.xy+vec2(1,1))/vec2(2,2);
+      }
+    </script>
+  </head>
+  <body onload="drawScene();">
+    <canvas id="canvas" style="border: none;" width="500" height="500"></canvas>
+    <script src="test.js"></script>
+  </body>
+</html>

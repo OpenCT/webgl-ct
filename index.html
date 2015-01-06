@@ -3,6 +3,20 @@
     <title>Learning WebGL &mdash; lesson 5</title>
     <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
   
+    <script id="simple-fs" type="x-shader/x-fragment">
+      precision mediump float;
+      uniform float a; //for javascript simplicity
+      uniform float b;
+      uniform float c;
+      
+      varying vec2 vTextureCoord;
+      uniform sampler2D uSampler;
+      
+      void main(void) {
+        gl_FragColor = texture2D(uSampler, vTextureCoord);
+      }
+
+    </script>
     <script id="simulate-fs" type="x-shader/x-fragment">
       precision mediump float;
       uniform float a;
@@ -23,8 +37,8 @@
           point += unit*vec2(2.0/1000.0,2.0/1000.0);
           value += texture2D(uSampler, point * RotationMatrix/vec2(2.0,2.0)+vec2(.5,.5)).r;
         }
-        gl_FragColor = texture2D(uSampler, vTextureCoord);
-        gl_FragColor.rbga = vec4(value / 1000.0,0.0,0.0,1.0);
+        value /= 1000.0;
+        gl_FragColor.rbga = vec4(value,value,value,1.0);
       }
       
       void main(void) {
@@ -56,15 +70,15 @@
         vec2 pos = vTextureCoord * vec2(2,2) - vec2(1,1);
         float temp = length(pos)/a;
         float amplitude = temp/sqrt(temp*temp+1.0);
-        float angle = atan(pos.y,pos.x);
+        float angle = atan(-pos.y,pos.x); //not sure why I needed to flip y here
         float value = 0.0;
         temp = 0.0;
         for(int i = 0; i < 1000; i++){
           temp += 1.0 / 1000.;
           value += getValue(amplitude,angle,temp);
         }
-        gl_FragColor.rbga = vec4(value/5000.0 - 0.1,0.0,0.0,1.0);
-        gl_FragColor.rbga = vec4(value/5000.0 - 0.1,0.0,1.0,1.0);
+        value = value/5000.0 - 0.1;
+        gl_FragColor.rbga = vec4(value,value,value,1.0);
       }
       
       void main(void) {
@@ -84,8 +98,8 @@
       }
     </script>
   </head>
-  <body onload="drawScene(simulate.program,simulate.buffer,simulate.texture);">
-    <canvas id="canvas" style="border: none;" width="512" height="512"></canvas>
+  <body onload="drawScene();">
+    <canvas id="canvas" style="border: none;" width="1536" height="512"></canvas>
     <script src="test.js"></script>
   </body>
 </html>

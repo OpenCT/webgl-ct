@@ -86,8 +86,9 @@ function handleLoadedTexture(texture) {
 
 
 
-function initTexture(src) {
+function initTexture(program,src) {
   var tex;
+  gl.useProgram(program);
   tex = gl.createTexture();
   tex.image = new Image();
   tex.image.onload = function () {
@@ -96,6 +97,35 @@ function initTexture(src) {
   tex.image.src = src;
   return tex;
 }
+
+var rttFramebuffer;
+var rttTexture;
+
+function initTextureFramebuffer() {
+    rttFramebuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+    rttFramebuffer.width = 512;
+    rttFramebuffer.height = 512;
+
+    rttTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rttFramebuffer.width, rttFramebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+    var renderbuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, rttFramebuffer.width, rttFramebuffer.height);
+
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+}
+
 
 function initBuffers() {
   var positionBuffer;
@@ -113,10 +143,11 @@ function initBuffers() {
   positionBuffer.numItems = 4;
   return positionBuffer;
 }
-var b = 0.2;
+var b = 0.8;
 var a = 0.8;
 var c = 1;
 function draw(program,texture){
+  gl.useProgram(program);
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.vertexAttribPointer(program.vertexPositionAttribute, buffer.itemSize, gl.FLOAT, false, 0, 0);
   
@@ -131,25 +162,42 @@ function draw(program,texture){
 }
 
 function drawScene(){
-  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight/2);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  draw(recreate.program,recreate.texture);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.viewport(0, 0, rttFramebuffer.width, rttFramebuffer.height);
+    draw(simulate.program,simulate.texture);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  
+  gl.viewport(0,0, gl.viewportWidth/3, gl.viewportHeight);
+  draw(simple.program,simple.texture);
+  gl.viewport(gl.viewportWidth/3, 0, gl.viewportWidth/3, gl.viewportHeight);
+  draw(simulate.program,simulate.texture);
+  gl.viewport(gl.viewportWidth*2/3,0, gl.viewportWidth/3, gl.viewportHeight);
+  draw(recreate.program,rttTexture);
+  drawing = false;
 }
+
 var canvas = document.getElementById("canvas");
 var gl = initGL(canvas);
 var buffer = initBuffers();
+initTextureFramebuffer();
+var simple = {};
+simple.program = initShaders('simple');
+simple.texture = initTexture(simple.program,'test.gif');
 
 var simulate = {};
 simulate.program = initShaders('simulate');
-simulate.texture = initTexture('test.gif');
+simulate.texture = initTexture(simulate.program,'test.gif');
 
 var recreate = {};
 recreate.program = initShaders('recreate');
-recreate.texture = initTexture('test.png');
+recreate.texture = initTexture(recreate.program,'test.png');
 
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.enable(gl.DEPTH_TEST);
 
+var drawing = false;
 document.onkeydown = function(e){
   if(e.keyCode == 40){
     b+=0.01;
@@ -162,5 +210,9 @@ document.onkeydown = function(e){
   }
   if(e.keyCode == 37){
     a-=0.01;
+  }
+  if(!drawing){
+    requestAnimationFrame(drawScene);
+    drawing = true;
   }
 };

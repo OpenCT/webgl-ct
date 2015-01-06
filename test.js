@@ -1,6 +1,5 @@
-var gl;
-
 function initGL(canvas) {
+  var gl;
   try {
     gl = canvas.getContext("experimental-webgl", {preserveDrawingBuffer: true});
     gl.viewportWidth = canvas.width;
@@ -10,10 +9,10 @@ function initGL(canvas) {
   if (!gl) {
     alert("Could not initialise WebGL, sorry :-(");
   }
+  return gl;
 }
 
-
-function getShader(gl, id) {
+function getShader(id) {
   var shaderScript = document.getElementById(id);
   if (!shaderScript) {
     return null;
@@ -48,14 +47,14 @@ function getShader(gl, id) {
   return shader;
 }
 
+function initShaders(type) {
+  var shaderProgram;
 
-var shaderProgram;
-
-function initShaders() {
-  var fragmentShader = getShader(gl, "shader-fs");
-  var vertexShader = getShader(gl, "shader-vs");
+  var fragmentShader = getShader(type+"-fs");
+  var vertexShader = getShader("shader-vs");
 
   shaderProgram = gl.createProgram();
+  
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
@@ -73,6 +72,7 @@ function initShaders() {
   shaderProgram.aUniform = gl.getUniformLocation(shaderProgram, "a");
   shaderProgram.bUniform = gl.getUniformLocation(shaderProgram, "b");
   shaderProgram.cUniform = gl.getUniformLocation(shaderProgram, "c");
+  return shaderProgram;
 }
 
 function handleLoadedTexture(texture) {
@@ -85,22 +85,20 @@ function handleLoadedTexture(texture) {
 }
 
 
-var neheTexture;
 
-function initTexture() {
-  neheTexture = gl.createTexture();
-  neheTexture.image = new Image();
-  neheTexture.image.onload = function () {
-    handleLoadedTexture(neheTexture);
+function initTexture(src) {
+  var tex;
+  tex = gl.createTexture();
+  tex.image = new Image();
+  tex.image.onload = function () {
+    handleLoadedTexture(tex);
   };
-
-  neheTexture.image.src = "test.png";
+  tex.image.src = src;
+  return tex;
 }
 
-
-var positionBuffer;
-
 function initBuffers() {
+  var positionBuffer;
   positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   vertices = [
@@ -113,32 +111,41 @@ function initBuffers() {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   positionBuffer.itemSize = 3;
   positionBuffer.numItems = 4;
+  return positionBuffer;
 }
 var b = 0.2;
 var a = 0.8;
 var c = 1;
-function drawScene() {
-  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, positionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+function draw(program,texture){
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.vertexAttribPointer(program.vertexPositionAttribute, buffer.itemSize, gl.FLOAT, false, 0, 0);
   
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, neheTexture);
-  gl.uniform1i(shaderProgram.samplerUniform, 0);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.uniform1i(program.samplerUniform, 0);
   
-  gl.uniform1f(shaderProgram.aUniform, a);
-  gl.uniform1f(shaderProgram.bUniform, b);
-  gl.uniform1f(shaderProgram.cUniform, c);
+  gl.uniform1f(program.aUniform, a);
+  gl.uniform1f(program.bUniform, b);
+  gl.uniform1f(program.cUniform, c);
   gl.drawArrays(gl.TRIANGLE_FAN, 0,4);
 }
 
+function drawScene(){
+  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight/2);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  draw(recreate.program,recreate.texture);
+}
 var canvas = document.getElementById("canvas");
-initGL(canvas);
-initShaders();
-initBuffers();
-initTexture();
+var gl = initGL(canvas);
+var buffer = initBuffers();
+
+var simulate = {};
+simulate.program = initShaders('simulate');
+simulate.texture = initTexture('test.gif');
+
+var recreate = {};
+recreate.program = initShaders('recreate');
+recreate.texture = initTexture('test.png');
 
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.enable(gl.DEPTH_TEST);
@@ -156,5 +163,4 @@ document.onkeydown = function(e){
   if(e.keyCode == 37){
     a-=0.01;
   }
-  drawScene()
 };

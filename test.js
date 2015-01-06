@@ -192,7 +192,6 @@ simulate.texture = initTexture(simulate.program,'test.gif');
 
 var recreate = {};
 recreate.program = initShaders('recreate');
-recreate.texture = initTexture(recreate.program,'test.png');
 
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.enable(gl.DEPTH_TEST);

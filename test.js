@@ -86,9 +86,8 @@ function handleLoadedTexture(texture) {
 
 
 
-function initTexture(program,src) {
+function initTexture(src) {
   var tex;
-  gl.useProgram(program);
   tex = gl.createTexture();
   tex.image = new Image();
   tex.image.onload = function () {
@@ -184,11 +183,11 @@ var buffer = initBuffers();
 initTextureFramebuffer();
 var simple = {};
 simple.program = initShaders('simple');
-simple.texture = initTexture(simple.program,'test.gif');
+simple.texture = initTexture('test.gif');
 
 var simulate = {};
 simulate.program = initShaders('simulate');
-simulate.texture = initTexture(simulate.program,'test.gif');
+simulate.texture = initTexture('test.gif');
 
 var recreate = {};
 recreate.program = initShaders('recreate');

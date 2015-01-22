@@ -27,7 +27,7 @@
     
       uniform sampler2D uSampler;
       void simulate(void) {
-        float angle = 3.14*vTextureCoord.y;
+        float angle = 3.14*(vTextureCoord.y-vTextureCoord.x*.4); //-x*.4 magically removes distortions
         mat2 RotationMatrix = mat2(cos(angle), -sin(angle),
                                    sin(angle),  cos(angle));
         vec2 unit = normalize(vec2(2.0*(vTextureCoord.x-0.5),-(a+b)));
@@ -57,13 +57,14 @@
     
       uniform sampler2D uSampler;
       float getValue(float amp, float ang, float temp){
-        float tmp  = 277.8*texture2D(uSampler, vec2(amp*cos(temp*3.14+ang)/2.0+0.5,temp)).r;
-              tmp -= 112.6*texture2D(uSampler, vec2(amp*cos(temp*3.14+ang)/2.0+0.53,temp)).r;
-              tmp -= 112.6*texture2D(uSampler, vec2(amp*cos(temp*3.14+ang)/2.0+0.47,temp)).r;
-              tmp -= 12.51*texture2D(uSampler, vec2(amp*cos(temp*3.14+ang)/2.0+0.53,temp)).r;
-              tmp -= 12.51*texture2D(uSampler, vec2(amp*cos(temp*3.14+ang)/2.0+0.47,temp)).r;
-              tmp -= 4.503*texture2D(uSampler, vec2(amp*cos(temp*3.14+ang)/2.0+0.53,temp)).r;
-              tmp -= 4.503*texture2D(uSampler, vec2(amp*cos(temp*3.14+ang)/2.0+0.47,temp)).r;
+        float angle = amp*cos(temp*3.14 + ang - 3.14/5.0)/2.0;
+        float tmp  = 277.8*texture2D(uSampler, vec2(angle+0.5,temp)).r;
+              tmp -= 112.6*texture2D(uSampler, vec2(angle+0.53,temp)).r;
+              tmp -= 112.6*texture2D(uSampler, vec2(angle+0.47,temp)).r;
+              tmp -= 12.51*texture2D(uSampler, vec2(angle+0.53,temp)).r;
+              tmp -= 12.51*texture2D(uSampler, vec2(angle+0.47,temp)).r;
+              tmp -= 4.503*texture2D(uSampler, vec2(angle+0.53,temp)).r;
+              tmp -= 4.503*texture2D(uSampler, vec2(angle+0.47,temp)).r;
         return tmp;
       }
       void recreate(void) {

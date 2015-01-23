@@ -61,14 +61,17 @@
         float tmp  = 277.8*texture2D(uSampler, vec2(angle+0.5,temp)).r;
               tmp -= 112.6*texture2D(uSampler, vec2(angle+0.53,temp)).r;
               tmp -= 112.6*texture2D(uSampler, vec2(angle+0.47,temp)).r;
-              tmp -= 12.51*texture2D(uSampler, vec2(angle+0.53,temp)).r;
-              tmp -= 12.51*texture2D(uSampler, vec2(angle+0.47,temp)).r;
-              tmp -= 4.503*texture2D(uSampler, vec2(angle+0.53,temp)).r;
-              tmp -= 4.503*texture2D(uSampler, vec2(angle+0.47,temp)).r;
+              tmp -= 12.51*texture2D(uSampler, vec2(angle+0.56,temp)).r;
+              tmp -= 12.51*texture2D(uSampler, vec2(angle+0.44,temp)).r;
+              tmp -= 4.503*texture2D(uSampler, vec2(angle+0.59,temp)).r;
+              tmp -= 4.503*texture2D(uSampler, vec2(angle+0.41,temp)).r;
+              tmp -= 3.127*texture2D(uSampler, vec2(angle+0.62,temp)).r;
+              tmp -= 3.127*texture2D(uSampler, vec2(angle+0.38,temp)).r;
         return tmp;
       }
       void recreate(void) {
         vec2 pos = vTextureCoord * vec2(2,2) - vec2(1,1);
+        pos = pos/(1.-pos.x*pos.x-pos.y*pos.y);
         float temp = length(pos)/a;
         float amplitude = temp/sqrt(temp*temp+1.0);
         float angle = atan(-pos.y,pos.x); //not sure why I needed to flip y here

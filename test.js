@@ -101,6 +101,8 @@ var rttFramebuffer;
 var rttTexture;
 
 function initTextureFramebuffer() {
+    var rttFramebuffer;
+    var rttTexture;
     rttFramebuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
     rttFramebuffer.width = 512;
@@ -123,6 +125,8 @@ function initTextureFramebuffer() {
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindRenderbuffer(gl.RENDERBUFFER, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    
+    return [rttTexture,rttFramebuffer];
 }
 
 
@@ -162,35 +166,70 @@ function draw(program,texture){
 
 function drawScene(){
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, recreate.buffer);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.viewport(0, 0, rttFramebuffer.width, rttFramebuffer.height);
+    gl.viewport(0, 0, recreate.buffer.width, recreate.buffer.height);
     draw(simulate.program,simulate.texture);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   
-  gl.viewport(0,0, gl.viewportWidth/3, gl.viewportHeight);
+  gl.viewport(0,0, gl.viewportWidth/4, gl.viewportHeight);
   draw(simple.program,simple.texture);
-  gl.viewport(gl.viewportWidth/3, 0, gl.viewportWidth/3, gl.viewportHeight);
+  gl.viewport(gl.viewportWidth/4, 0, gl.viewportWidth/4, gl.viewportHeight);
   draw(simulate.program,simulate.texture);
-  gl.viewport(gl.viewportWidth*2/3,0, gl.viewportWidth/3, gl.viewportHeight);
-  draw(recreate.program,rttTexture);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, diff.buffer);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.viewport(0, 0, diff.buffer.width, diff.buffer.height);
+    draw(recreate.program,recreate.texture);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(gl.viewportWidth*2/4,0, gl.viewportWidth/4, gl.viewportHeight);
+  draw(simple.program,diff.texture);
+  
+  gl.viewport(gl.viewportWidth*3/4,0, gl.viewportWidth/4, gl.viewportHeight);
+  gl.useProgram(diff.program);
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.vertexAttribPointer(diff.program.vertexPositionAttribute, buffer.itemSize, gl.FLOAT, false, 0, 0);
+  
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, simple.texture);
+  gl.uniform1i(diff.program.samplerUniform, 0);
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, diff.texture);
+  gl.uniform1i(diff.program.samplerBUniform, 1);
+  gl.activeTexture(gl.TEXTURE0);
+  
+  gl.uniform1f(diff.program.aUniform, a);
+  gl.uniform1f(diff.program.bUniform, b);
+  gl.uniform1f(diff.program.cUniform, c);
+  gl.drawArrays(gl.TRIANGLE_FAN, 0,4);
+  
   drawing = false;
 }
 
 var canvas = document.getElementById("canvas");
 var gl = initGL(canvas);
 var buffer = initBuffers();
-initTextureFramebuffer();
+
 var simple = {};
 simple.program = initShaders('simple');
 simple.texture = initTexture('test.gif');
 
 var simulate = {};
 simulate.program = initShaders('simulate');
-simulate.texture = initTexture('test.gif');
+simulate.texture = simple.texture;
 
 var recreate = {};
 recreate.program = initShaders('recreate');
+var framebuffer = initTextureFramebuffer();
+recreate.texture = framebuffer[0];
+recreate.buffer = framebuffer[1];
+
+var diff = {};
+diff.program = initShaders('diff');
+gl.useProgram(diff.program);
+diff.program.samplerBUniform = gl.getUniformLocation(diff.program, "samplerB");
+framebuffer = initTextureFramebuffer();
+diff.texture = framebuffer[0];
+diff.buffer = framebuffer[1];
 
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.enable(gl.DEPTH_TEST);
@@ -214,3 +253,44 @@ document.onkeydown = function(e){
     drawing = true;
   }
 };
+
+
+var input = document.getElementById('input');
+var ctx=input.getContext("2d");
+ctx.beginPath();
+ctx.fillRect(0,0,512,512);
+ctx.stroke();
+var x,y,down;
+input.onmousedown = function(e){
+  down = true;
+  console.log('down');
+  x = e.x;
+  y = e.y;
+};
+input.onmousemove = function(e){
+  if(down){
+    console.log(e.x,e.y);
+    ctx.beginPath();
+    ctx.strokeStyle="#FFFFFF";
+    ctx.lineWidth = 15;
+    ctx.moveTo(x,y);
+    ctx.lineTo(e.x,e.y);
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    x = e.x;
+    y = e.y;
+  }else{
+    console.log('not down yet');
+  }
+};
+input.onmouseup = function(e){
+  down = false;
+  console.log('up');
+};
+
+function setImage(){
+  var url = input.toDataURL();
+  simple.texture = initTexture(url);
+  simulate.texture = simple.texture;
+  setTimeout(drawScene,10);
+}

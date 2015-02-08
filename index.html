@@ -73,7 +73,7 @@
         vec2 pos = vTextureCoord * vec2(2,2) - vec2(1,1);
         pos = pos/(1.-pos.x*pos.x-pos.y*pos.y);
         float temp = length(pos)/a;
-        float amplitude = temp/sqrt(temp*temp+1.0);
+        float amplitude =1.64*temp/sqrt(temp*temp+1.0); //1.64 scales the output to the correct scale for a=.8;b=.8;c=1;
         float angle = atan(-pos.y,pos.x); //not sure why I needed to flip y here
         float value = 0.0;
         temp = 0.0;
@@ -83,10 +83,30 @@
         }
         value = value/5000.0 - 0.1;
         gl_FragColor.rbga = vec4(value,value,value,1.0);
+        /*if( value > .3 ){ gl_FragColor.r = .5; }
+        if( value > .15 ){ gl_FragColor.g = .3; }
+        if( value > .0 ){ gl_FragColor.b = .1; }*/
       }
       
       void main(void) {
         recreate();
+      }
+
+    </script>
+    
+    <script id="diff-fs" type="x-shader/x-fragment">
+      precision mediump float;
+      uniform float a;
+      uniform float b;
+      uniform float c;
+      
+      varying vec2 vTextureCoord;
+    
+      uniform sampler2D uSampler;
+      uniform sampler2D samplerB;
+      
+      void main(void) {
+        gl_FragColor = vec4(texture2D(samplerB,vTextureCoord).rgb - texture2D(uSampler,vTextureCoord).rgb,1.0);
       }
 
     </script>
@@ -103,7 +123,9 @@
     </script>
   </head>
   <body onload="drawScene();">
-    <canvas id="canvas" style="border: none;" width="1536" height="512"></canvas>
+    <canvas id="input"  style="border: none;" width="512" height="512"></canvas>
+    <input type="submit" onclick="setImage();">
+    <canvas id="canvas" style="border: none;" width="2048" height="512"></canvas>
     <script src="test.js"></script>
   </body>
 </html>

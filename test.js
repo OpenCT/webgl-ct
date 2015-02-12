@@ -278,8 +278,8 @@ input.onmousemove = function(e){
     ctx.lineTo(e.offsetX,e.offsetY);
     ctx.lineCap = 'round';
     ctx.stroke();
-    x = e.x;
-    y = e.y;
+    x = e.offsetX;
+    y = e.offsetY;
   }else{
     console.log('not down yet');
   }

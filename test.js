@@ -174,19 +174,19 @@ function drawScene(){
     draw(simulate.program,simulate.texture);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   
-  gl.viewport(0,0, gl.viewportWidth/2, gl.viewportHeight/2);
+  gl.viewport(0,gl.viewportHeight/2, gl.viewportWidth/2, gl.viewportHeight/2);
   draw(simple.program,simple.texture);
-  gl.viewport(gl.viewportWidth/2, 0, gl.viewportWidth/2, gl.viewportHeight/2);
+  gl.viewport(gl.viewportWidth/2, gl.viewportHeight/2, gl.viewportWidth/2, gl.viewportHeight/2);
   draw(simulate.program,simulate.texture);
   gl.bindFramebuffer(gl.FRAMEBUFFER, diff.buffer);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.viewport(0, 0, diff.buffer.width, diff.buffer.height);
     draw(recreate.program,recreate.texture);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  gl.viewport(0,gl.viewportHeight/2, gl.viewportWidth/2, gl.viewportHeight/2);
+  gl.viewport(0,0, gl.viewportWidth/2, gl.viewportHeight/2);
   draw(simple.program,diff.texture);
   
-  gl.viewport(gl.viewportWidth/2,gl.viewportHeight/2, gl.viewportWidth/2, gl.viewportHeight/2);
+  gl.viewport(gl.viewportWidth/2,0, gl.viewportWidth/2, gl.viewportHeight/2);
   gl.useProgram(diff.program);
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.vertexAttribPointer(diff.program.vertexPositionAttribute, buffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -266,17 +266,16 @@ var x,y,down;
 input.onmousedown = function(e){
   down = true;
   console.log('down');
-  x = e.x;
-  y = e.y;
+  x = e.offsetX;
+  y = e.offsetY;
 };
 input.onmousemove = function(e){
   if(down){
-    console.log(e.x,e.y);
     ctx.beginPath();
     ctx.strokeStyle="#FFFFFF";
     ctx.lineWidth = 15;
     ctx.moveTo(x,y);
-    ctx.lineTo(e.x,e.y);
+    ctx.lineTo(e.offsetX,e.offsetY);
     ctx.lineCap = 'round';
     ctx.stroke();
     x = e.x;

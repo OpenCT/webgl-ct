@@ -203,7 +203,7 @@ function drawScene(){
   gl.uniform1f(diff.program.bUniform, b);
   gl.uniform1f(diff.program.cUniform, c);
   gl.drawArrays(gl.TRIANGLE_FAN, 0,4);
-  
+  console.log(performance.now()-time);
   drawing = false;
 }
 
@@ -265,7 +265,6 @@ ctx.stroke();
 var x,y,down;
 input.onmousedown = function(e){
   down = true;
-  console.log('down');
   x = e.offsetX;
   y = e.offsetY;
 };
@@ -280,16 +279,14 @@ input.onmousemove = function(e){
     ctx.stroke();
     x = e.offsetX;
     y = e.offsetY;
-  }else{
-    console.log('not down yet');
   }
 };
 input.onmouseup = function(e){
   down = false;
-  console.log('up');
 };
-
+var time;
 function setImage(){
+  time = performance.now();
   var url = input.toDataURL();
   simple.texture = initTexture(url);
   simulate.texture = simple.texture;

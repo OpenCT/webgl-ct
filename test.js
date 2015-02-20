@@ -300,6 +300,7 @@ function selectImage(){
   simple.texture = gl.createTexture();
   simple.texture.image = text;
   handleLoadedTexture(simple.texture);
+  simulate.texture = simple.texture;
   setTimeout(drawScene,10);
 }
 

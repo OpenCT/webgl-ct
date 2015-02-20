@@ -293,9 +293,9 @@ function setImage(){
   setTimeout(drawScene,10);
 }
 
-function onChange(){
+function selectImage(){
   var element = document.getElementsByTagName("select")[0];
-  var text = document.getElementById(element.options[e.selectedIndex].text);
+  var text = document.getElementById(element.options[element.selectedIndex].text);
   var tex;
   simple.texture = gl.createTexture();
   simple.texture.image = text;

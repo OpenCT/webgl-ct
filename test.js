@@ -296,3 +296,13 @@ function setImage(){
   simulate.texture = simple.texture;
   setTimeout(drawScene,10);
 }
+
+function onChange(){
+  var element = document.getElementsByTagName("select")[0];
+  var text = document.getElementById(element.options[e.selectedIndex].text);
+  var tex;
+  simple.texture = gl.createTexture();
+  simple.texture.image = text;
+  handleLoadedTexture(simple.texture);
+  setTimeout(drawScene,10);
+}
